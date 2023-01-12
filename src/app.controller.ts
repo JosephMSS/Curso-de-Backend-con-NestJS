@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
 /**
@@ -39,6 +39,13 @@ export class AppController {
     return `Product ID:${productId}`;
   }
   /**
+   * Todas las rutas no dinámicas se colocan al principio, las dinámicas van de secundarias
+   *  */
+  @Get('categories/filter')
+  getCategoryFilter(): string {
+    return `Filter`;
+  }
+  /**
    * O podemos recibir el el objeto
    * params con todos los datos
    * @param params
@@ -54,5 +61,19 @@ export class AppController {
     @Param('personId') personId: string,
   ): string {
     return `Category ID:${categoryId}  ${personId}`;
+  }
+  /**
+   *
+   * @param limit Infiere su tipo si definimos un valor por defecto
+   * @param offset
+   * @param brand Definimos su tipo, ya que, no asignamos un valor por defecto
+   */
+  @Get('products')
+  findAll(
+    @Query('limit') limit = 100,
+    @Query('offset') offset = 20,
+    @Query('brand') brand: string,
+  ) {
+    return `Products : Limit:${limit} Offset:${offset}`;
   }
 }
