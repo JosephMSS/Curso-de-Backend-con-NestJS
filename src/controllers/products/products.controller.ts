@@ -53,10 +53,6 @@ export class ProductsController {
    */
   findOne(@Param('productId', ParseIntPipe) productId: number) {
     const product = this.productsService.findOne(productId);
-    console.log(
-      '🚀 ~ file: products.controller.ts:51 ~ ProductsController ~ findOne ~ product',
-      product,
-    );
     return product;
   }
   @Post()
