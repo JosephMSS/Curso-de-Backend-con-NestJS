@@ -10,7 +10,8 @@ import {
   HttpCode,
   Put,
 } from '@nestjs/common';
-
+import { ParseIntPipe } from '@nestjs/common/pipes';
+import { ProductsService } from 'src/services/products/products.service';
 /**
  * *El controlador al recibir el parámetro 'products'
  * *indica que las rutas que contiene van a
@@ -18,6 +19,7 @@ import {
  */
 @Controller('products')
 export class ProductsController {
+  constructor(private productsService: ProductsService) {}
   /**
    *
    * @param limit Infiere su tipo si definimos un valor por defecto
@@ -30,7 +32,8 @@ export class ProductsController {
     @Query('offset') offset = 20,
     @Query('brand') brand: string,
   ) {
-    return `Products : Limit:${limit} Offset:${offset} Brand:${brand}`;
+    const productList = this.productsService.findAll();
+    return productList;
   }
   /**
    ** Se recomienda que las rutas estén en plural
@@ -43,24 +46,30 @@ export class ProductsController {
    * @returns
    */
   @Get(':productId')
-  @HttpCode(HttpStatus.NOT_FOUND)
-  findOne(@Param('productId') productId: string): string {
-    return `Product ID:${productId}`;
+  @HttpCode(HttpStatus.FOUND)
+
+  /**
+   * *Los pipes funcionan pra transformar las variables a los datos que necesitamos
+   */
+  findOne(@Param('productId', ParseIntPipe) productId: number) {
+    const product = this.productsService.findOne(productId);
+    console.log(
+      '🚀 ~ file: products.controller.ts:51 ~ ProductsController ~ findOne ~ product',
+      product,
+    );
+    return product;
   }
   @Post()
   create(@Body() payload: any) {
-    return {
-      message: 'create action',
-      payload: payload,
-    };
+    const newProduct = this.productsService.create(payload);
+    return { newProduct };
   }
   @Put(':productId')
-  update(@Body() payload: any, @Param('productId') productId: string) {
-    return {
-      message: 'create action',
-      payload: payload,
-      productId,
-    };
+  update(
+    @Body() payload: any,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    return this.productsService.update(payload, productId);
   }
   @Delete(':productId')
   delete(@Param('productId') productId: string) {

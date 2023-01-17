@@ -18,7 +18,11 @@ export class ProductsService {
     return this.products;
   }
   findOne(productId: number) {
-    return this.products.find((product) => product.id === productId);
+    return this.products.find((product) => {
+      if (product.id === productId) {
+        return product;
+      }
+    });
   }
   create(payload: any) {
     this.counter++;
@@ -27,5 +31,18 @@ export class ProductsService {
       ...payload,
     };
     this.products.push(newProduct);
+    return newProduct;
+  }
+  update(payload: any, productId: number) {
+    let product = this.findOne(productId);
+    if (!product) {
+      return null;
+    }
+    product = { ...product, ...payload };
+    const index = this.products.findIndex(
+      (product) => product.id === productId,
+    );
+    this.products[index] = product;
+    return product;
   }
 }
